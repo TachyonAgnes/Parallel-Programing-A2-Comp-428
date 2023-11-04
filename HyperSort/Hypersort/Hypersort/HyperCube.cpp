@@ -62,8 +62,8 @@ void SequentialQuickSort(std::vector<int> &vec, int low, int high) {
 
 // generate random numbers
 std::vector<int> GenerateRandomNumbers(int size) {
-	std::srand(static_cast<unsigned int>(std::time(nullptr)));
-
+	//std::srand(static_cast<unsigned int>(std::time(nullptr)));
+	std::srand(42);
 	std::vector<int> randomNumbers(size);
 	for (int i = 0; i < size; i++) {
 		randomNumbers[i] = rand() % size;
@@ -72,11 +72,12 @@ std::vector<int> GenerateRandomNumbers(int size) {
 }
 
 void DisplayResults(int d, int n, double t, std::vector<int> &sortedData) {
+	
 	std::cout << "\033[32m";  
 	std::cout << "\n\n------------------------------------\n";
 	std::cout << "Hypercube Dimension: " << d << " \n";
 	std::cout << "Input Size: " << n << " \n";
-	std::cout << "Execution Time: " << std::fixed << std::setprecision(6) << t << " seconds \n";
+	std::cout << "Parallel execution time: " << t * 1000 * 1000 << " microsecond" << std::endl;
 	std::cout << "\033[0m";  
 	for (int i = 0; i < sortedData.size(); i++) {
 		std::cout << sortedData[i] << " ";
@@ -224,6 +225,10 @@ int main(int argc, char *argv[]) {
 		arraySize = atoi(argv[1]);
 		if (g_processID == MASTER) {
 			unsortedArray = GenerateRandomNumbers(arraySize);
+			executionTime = MPI_Wtime();
+			SequentialQuickSort(unsortedArray, 0, unsortedArray.size()-1);
+			executionTime = MPI_Wtime() - executionTime;
+			std::cout << "With arraySize: " << arraySize << ", coreSize: "<< numOfProcesses <<", Sequential execution time: " << executionTime * 1000 * 1000 << " microsecond" << std::endl;
 		}
 		else {
 			unsortedArray.reserve(arraySize);
@@ -291,7 +296,8 @@ int main(int argc, char *argv[]) {
 		}
 		// display result
 		if (g_processID == MASTER) {
-			DisplayResults(g_dimension, arraySize, executionTime, sortedArray);
+		    std::cout << "With arraySize: " << arraySize << ", coreSize: " << numOfProcesses << ", Parallel execution time: " << executionTime * 1000 * 1000 << " microsecond" << std::endl;
+			//DisplayResults(g_dimension, arraySize, executionTime, sortedArray);
 		}
 	}
 	MPI_Finalize();
