@@ -12,6 +12,18 @@ int g_processID, g_dimension;
 
 MPI_Status status;
 
+int medianOfThree(int a, int b, int c) {
+	if ((a - b) * (c - a) >= 0) {
+		return a; // a is the median
+	}
+	else if ((b - a) * (c - b) >= 0) {
+		return b; // b is the median
+	}
+	else {
+		return c; // c is the median
+	}
+}
+
 // partition
 int Partition(std::vector<int> &vec, int low, int high, int pivotValue) {
 	int smallerElementIndex = low - 1;
@@ -29,6 +41,19 @@ int Partition(std::vector<int> &vec, int low, int high, int pivotValue) {
 // sequential quick sort
 void SequentialQuickSort(std::vector<int> &vec, int low, int high) {
 	if (low < high) {
+		// Find the median among arr[low], arr[high], and arr[(low+high)/2]
+		int mid = low + (high - low) / 2;
+		int pivotValue = medianOfThree(vec[low], vec[mid], vec[high]);
+
+		// We need to ensure that the pivot is at arr[high] for the partition process
+		if (pivotValue == vec[low]) {
+			std::swap(vec[low], vec[high]);
+		}
+		else if (pivotValue == vec[mid]) {
+			std::swap(vec[mid], vec[high]);
+		}
+		// Now arr[high] is the pivot element
+
 		int pivot = Partition(vec, low, high, vec[high]);
 		SequentialQuickSort(vec, low, pivot - 1);
 		SequentialQuickSort(vec, pivot + 1, high);
@@ -37,6 +62,8 @@ void SequentialQuickSort(std::vector<int> &vec, int low, int high) {
 
 // generate random numbers
 std::vector<int> GenerateRandomNumbers(int size) {
+	std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
 	std::vector<int> randomNumbers(size);
 	for (int i = 0; i < size; i++) {
 		randomNumbers[i] = rand() % size;
@@ -44,13 +71,16 @@ std::vector<int> GenerateRandomNumbers(int size) {
 	return randomNumbers;
 }
 
-void DisplayResults(int d, int n, double t) {
+void DisplayResults(int d, int n, double t, std::vector<int> &sortedData) {
 	std::cout << "\033[32m";  
 	std::cout << "\n\n------------------------------------\n";
 	std::cout << "Hypercube Dimension: " << d << " \n";
 	std::cout << "Input Size: " << n << " \n";
 	std::cout << "Execution Time: " << std::fixed << std::setprecision(6) << t << " seconds \n";
 	std::cout << "\033[0m";  
+	for (int i = 0; i < sortedData.size(); i++) {
+		std::cout << sortedData[i] << " ";
+	}
 }
 
 // Hypercube Quick Sort Algo
@@ -68,19 +98,26 @@ std::vector<int> HyperQuickSort(std::vector<int> &unsortedArray, int low, int hi
 	// initialize receive and merged buffer
 	std::fill(receivedData.begin(), receivedData.end(), -1);
 
-	int pivot;
-	pivot = unsortedArray[high];
-	int index = unsortedArray.size() - 1;
-	while (pivot <= 0 && index >= 0) {
-		pivot = unsortedArray[index];
-		index--;
+	int partitionIndex = 0;
+	if(unsortedArray.size() != 0){
+		int pivot;
+		// Find the median
+		int mid = low + (high - low) / 2;
+		int pivotValue = medianOfThree(unsortedArray[low], unsortedArray[mid], unsortedArray[high]);
+
+		// We need to ensure that the pivot is at arr[high] for the partition process
+		if (pivotValue == unsortedArray[low]) {
+			std::swap(unsortedArray[low], unsortedArray[high]);
+		}
+		else if (pivotValue == unsortedArray[mid]) {
+			std::swap(unsortedArray[mid], unsortedArray[high]);
+		}
+		// Now arr[high] is the pivot element
+		pivot = unsortedArray[high];
+		// partition the array
+		partitionIndex = Partition(unsortedArray, low, high, pivot);
 	}
-
-	// partition the array
-	int partitionIndex = Partition(unsortedArray, low, high, pivot);
-
-	std::cout << pivot << std::endl;
-
+	
 	// send the data to the destination
 	MPI_Status status;
 	int destination = 0;
@@ -88,48 +125,59 @@ std::vector<int> HyperQuickSort(std::vector<int> &unsortedArray, int low, int hi
 	if ((g_processID & (1 << dimension)) == 0) {
 		// prepare data and destination to send
 		destination = g_processID + std::pow(2, dimension);
-		dataToSend.assign(unsortedArray.begin() + partitionIndex, unsortedArray.begin() + high + 1);
-		// fill the unsorted array with -1
-		std::fill(unsortedArray.begin() + partitionIndex, unsortedArray.begin() + high + 1, -1);
-
-		// send and receive data
-		MPI_Send(dataToSend.data(), high - partitionIndex + 1, MPI_INT, destination, 0, MPI_COMM_WORLD);
-		MPI_Recv(receivedData.data(), receivedData.size(), MPI_INT, destination, 0, MPI_COMM_WORLD, &status);
+		if (unsortedArray.size() != 0) {
+			dataToSend.assign(unsortedArray.begin() + partitionIndex, unsortedArray.begin() + high + 1);
+			// fill the unsorted array with -1
+			std::fill(unsortedArray.begin() + partitionIndex, unsortedArray.begin() + high + 1, -1);
+			// send and receive data
+			MPI_Send(dataToSend.data(), high - partitionIndex + 1, MPI_INT, destination, 0, MPI_COMM_WORLD);
+			MPI_Recv(receivedData.data(), receivedData.size(), MPI_INT, destination, 0, MPI_COMM_WORLD, &status);
+		}
+		else {
+			dataToSend.clear();
+			MPI_Send(dataToSend.data(), 0, MPI_INT, destination, 0, MPI_COMM_WORLD);
+			MPI_Recv(receivedData.data(), receivedData.size(), MPI_INT, destination, 0, MPI_COMM_WORLD, &status);
+		}
 	}
 	// if dimension-th bit is 1
 	else {
 		// prepare data and destination to send
 		destination = g_processID - std::pow(2, dimension);
-		dataToSend.assign(unsortedArray.begin() + low, unsortedArray.begin() + partitionIndex);
-		// fill the unsorted array with -1
-		std::fill(unsortedArray.begin() + low, unsortedArray.begin() + partitionIndex, -1);
-
-		MPI_Recv(receivedData.data(), receivedData.size(), MPI_INT, destination, 0, MPI_COMM_WORLD, &status);
-		MPI_Send(dataToSend.data(), partitionIndex - low, MPI_INT, destination, 0, MPI_COMM_WORLD);
+		if (unsortedArray.size() != 0) {
+			dataToSend.assign(unsortedArray.begin() + low, unsortedArray.begin() + partitionIndex);
+			// fill the unsorted array with -1
+			std::fill(unsortedArray.begin() + low, unsortedArray.begin() + partitionIndex, -1);
+			MPI_Recv(receivedData.data(), receivedData.size(), MPI_INT, destination, 0, MPI_COMM_WORLD, &status);
+			MPI_Send(dataToSend.data(), partitionIndex - low, MPI_INT, destination, 0, MPI_COMM_WORLD);
+		}
+		else {
+			dataToSend.clear();
+			MPI_Recv(receivedData.data(), receivedData.size(), MPI_INT, destination, 0, MPI_COMM_WORLD, &status);
+			MPI_Send(dataToSend.data(), 0, MPI_INT, destination, 0, MPI_COMM_WORLD);
+		}
 	}
 
 	// merge the data
 	std::vector<int> mergedArray;
 	mergedArray.reserve(receivedData.size() + unsortedArray.size());
 	for (int i = 0; i < receivedData.size(); i++) {
-		if(receivedData[i] != -1)
+		if (receivedData[i] != -1)
 			mergedArray.push_back(receivedData[i]);
 	}
 	for (int i = 0; i < unsortedArray.size(); i++) {
-		if(unsortedArray[i] != -1)
+		if (unsortedArray[i] != -1)
 			mergedArray.push_back(unsortedArray[i]);
 	}
 	mergedArray.shrink_to_fit();
 
-	return HyperQuickSort(mergedArray, 0, mergedArray.size() - 1,
-						  dimension, receivedData, dataToSend);
+	return HyperQuickSort(mergedArray, 0, mergedArray.size() - 1, dimension, receivedData, dataToSend);
 }
 
 int main(int argc, char *argv[]) {
 	double executionTime;
 	int arraySize, numOfProcesses, portionSize=0;
 	std::vector<int> unsortedArrayBlock, unsortedArray, 
-					 buffer, finalMergedArray, 
+					 buffer, sortedArray, 
 					 receivedData, mergedArray, dataToSend;
 
 	int elementsCounter = 0;
@@ -174,37 +222,16 @@ int main(int argc, char *argv[]) {
 	else {
 		// Input size
 		arraySize = atoi(argv[1]);
-		
-		// we are going to spread data equally into each cpu
-		// portionSize stands for smallest size of each portion
-		portionSize = arraySize / numOfProcesses;
-		int remainder = arraySize % numOfProcesses;
-		std::vector<int> sendCounts(numOfProcesses, portionSize);
-		std::vector<int> displs(numOfProcesses, 0);
-
 		if (g_processID == MASTER) {
 			unsortedArray = GenerateRandomNumbers(arraySize);
-			
-			for (int i = 0; i < remainder; ++i) {
-				sendCounts[i]++;
-			}
-			for (int i = 1; i < numOfProcesses; ++i) {
-				displs[i] = displs[i - 1] + sendCounts[i - 1];
-			}
 		}
-		MPI_Bcast(sendCounts.data(), sendCounts.size(), MPI_INT, MASTER, MPI_COMM_WORLD);
-		MPI_Bcast(displs.data(), displs.size(), MPI_INT, MASTER, MPI_COMM_WORLD);
-		unsortedArrayBlock.resize(sendCounts[g_processID]);
-
-		// send the portion size and unsorted array to all process
-		MPI_Scatterv(unsortedArray.data(), sendCounts.data(), displs.data(), MPI_INT, unsortedArrayBlock.data(), sendCounts[g_processID], MPI_INT, MASTER, MPI_COMM_WORLD);
+		else {
+			unsortedArray.reserve(arraySize);
+		}
 		
 		// initialize vector and parameter
 		receivedData.resize(arraySize, -1);
 		dataToSend.resize(arraySize);
-
-		//finalMergedArray.resize(arraySize);
-		//buffer.resize(arraySize);
 
 		// wait for every process to finish
 		MPI_Barrier(MPI_COMM_WORLD);
@@ -213,52 +240,59 @@ int main(int argc, char *argv[]) {
 		}
 
 		// perform hypercube sorting
-		std::vector<int> sortedArray(sendCounts[g_processID], g_processID);
-		sortedArray = HyperQuickSort(unsortedArrayBlock, 0, sendCounts[g_processID] - 1,
+		std::vector<int> sortedArrayPortion;
+		sortedArrayPortion.reserve(arraySize);
+		sortedArrayPortion = HyperQuickSort(unsortedArray, 0, unsortedArray.size() - 1,
 													  g_dimension, receivedData, dataToSend);
 
-		///  tester
-		std::stringstream ss;
-		ss << "Process " << g_processID << " has data: ";
-		for (int i = 0; i < sortedArray.size(); ++i) {
-			ss << sortedArray[i] << " ";
-		}
-		ss << std::endl;
+		//// print the result
+		//std::stringstream ss;
+		//ss << "Process " << g_processID << " has data: ";
+		//for (int i = 0; i < sortedArrayPortion.size(); ++i) {
+		//	ss << sortedArrayPortion[i] << " ";
+		//}
+		//ss << std::endl;
 
-		MPI_Barrier(MPI_COMM_WORLD);
-
-		std::cout << ss.str();
-		/// end of tester
-
-		MPI_Barrier(MPI_COMM_WORLD);
-
-		//// wait for every process to finish
 		//MPI_Barrier(MPI_COMM_WORLD);
-		//if (g_processID == MASTER) {
-		//	executionTime = MPI_Wtime() - executionTime;
-		//}
 
-		//// merge sorted local result
-		//if (g_processID != MASTER) {
-		//	MPI_Send(sortedArray.data(), portionSize, MPI_INT, MASTER, 0, MPI_COMM_WORLD); {}
-		//}
-		//else {
-		//	// warning, probably have to remove -1 from sorted Array, it depends on hyperqs
-		//	finalMergedArray.insert(finalMergedArray.end(), sortedArray.begin(), sortedArray.end());
-		//	
-		//	// receive data from other process
-		//	for (int i = 1; i < numOfProcesses; i++) {
-		//		MPI_Recv(buffer.data(), portionSize, MPI_INT, i, 1, MPI_COMM_WORLD, &status);
-		//		// warning, probably have to remove -1 from sorted Array, it depends on hyperqs
-		//		/*end = std::remove(buffer.begin(), buffer.end(), -1);*/
-		//		finalMergedArray.insert(finalMergedArray.end(), buffer.begin(), buffer.end());
-		//	}
+		//std::cout << ss.str();
 
-		//}
-		//// display result
-		//if (g_processID == MASTER) {
-		//	DisplayResults(g_dimension, arraySize, executionTime);
-		//}
+		// wait for every process to finish
+		MPI_Barrier(MPI_COMM_WORLD);
+		if (g_processID == MASTER) {
+			executionTime = MPI_Wtime() - executionTime;
+		}
+
+		sortedArray.reserve(arraySize);
+		// merge sorted local result
+		if (g_processID != MASTER) {
+			MPI_Send(sortedArrayPortion.data(), sortedArrayPortion.size(), MPI_INT, MASTER, 0, MPI_COMM_WORLD); {}
+		}
+		else {
+			// warning, probably have to remove -1 from sorted Array portion, it depends on hyperqs
+			sortedArray.insert(sortedArray.end(), sortedArrayPortion.begin(), sortedArrayPortion.end());
+			
+			// receive data from other process
+			for (int i = 1; i < numOfProcesses; i++) {
+				// Probe for an incoming message from process i to determine message size
+				MPI_Probe(i, 0, MPI_COMM_WORLD, &status);
+				// Find out how much data is actually coming
+				int count;
+				MPI_Get_count(&status, MPI_INT, &count);
+
+				// allocate buffer to receive message
+				buffer.resize(count);
+				MPI_Recv(buffer.data(), buffer.size(), MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+	
+				// insert received data into sorted array
+				sortedArray.insert(sortedArray.end(), buffer.begin(), buffer.end());
+			}
+
+		}
+		// display result
+		if (g_processID == MASTER) {
+			DisplayResults(g_dimension, arraySize, executionTime, sortedArray);
+		}
 	}
 	MPI_Finalize();
 

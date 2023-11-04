@@ -1,12 +1,14 @@
 ﻿  HyperCube.cpp
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(73,38): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(90,29): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(97,102): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(102,29): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(107,102): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(125,44): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(147,20): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(195,82): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(196,74): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(127,29): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(134,103): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(139,103): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(145,29): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(150,103): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(155,103): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(173,99): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(195,20): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(246,53): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(269,101): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(285,82): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
   Hypersort.vcxproj -> C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\x64\Debug\Hypersort.exe
 D:\vcpkg\vcpkg\scripts\buildsystems\msbuild\vcpkg.targets(228,5): warning : [vcpkg] Failed to gather app local DLL dependencies, program may not run. Set VcpkgApplocalDeps to false in your project file to suppress this warning. PowerShell arguments: -ExecutionPolicy Bypass -noprofile -File "D:\vcpkg\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\x64\Debug\Hypersort.exe" "D:\vcpkg\vcpkg\installed\x64-windows\debug\bin" "x64\Debug\Hypersort.tlog\Hypersort.write.1u.tlog" "x64\Debug\vcpkg.applocal.log"
