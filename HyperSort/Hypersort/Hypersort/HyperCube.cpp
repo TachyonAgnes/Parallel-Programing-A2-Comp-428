@@ -1,10 +1,11 @@
-#pragma once
 #include "mpi.h"
 #include <iostream>
 #include<math.h>
 #include <vector>
 #include <iomanip>
 #include <sstream>
+#include <cstdlib>
+#include <cmath>
 
 #define MASTER 0
 
@@ -62,8 +63,8 @@ void SequentialQuickSort(std::vector<int> &vec, int low, int high) {
 
 // generate random numbers
 std::vector<int> GenerateRandomNumbers(int size) {
-	//std::srand(static_cast<unsigned int>(std::time(nullptr)));
-	std::srand(42);
+	//srand(static_cast<unsigned int>(std::time(nullptr)));
+	srand(42);
 	std::vector<int> randomNumbers(size);
 	for (int i = 0; i < size; i++) {
 		randomNumbers[i] = rand() % size;
@@ -125,7 +126,7 @@ std::vector<int> HyperQuickSort(std::vector<int> &unsortedArray, int low, int hi
 	// if dimension-th bit is 0
 	if ((g_processID & (1 << dimension)) == 0) {
 		// prepare data and destination to send
-		destination = g_processID + std::pow(2, dimension);
+		destination = g_processID + pow(2, dimension);
 		if (unsortedArray.size() != 0) {
 			dataToSend.assign(unsortedArray.begin() + partitionIndex, unsortedArray.begin() + high + 1);
 			// fill the unsorted array with -1
@@ -143,7 +144,7 @@ std::vector<int> HyperQuickSort(std::vector<int> &unsortedArray, int low, int hi
 	// if dimension-th bit is 1
 	else {
 		// prepare data and destination to send
-		destination = g_processID - std::pow(2, dimension);
+		destination = g_processID - pow(2, dimension);
 		if (unsortedArray.size() != 0) {
 			dataToSend.assign(unsortedArray.begin() + low, unsortedArray.begin() + partitionIndex);
 			// fill the unsorted array with -1
@@ -169,7 +170,6 @@ std::vector<int> HyperQuickSort(std::vector<int> &unsortedArray, int low, int hi
 		if (unsortedArray[i] != -1)
 			mergedArray.push_back(unsortedArray[i]);
 	}
-	mergedArray.shrink_to_fit();
 
 	return HyperQuickSort(mergedArray, 0, mergedArray.size() - 1, dimension, receivedData, dataToSend);
 }

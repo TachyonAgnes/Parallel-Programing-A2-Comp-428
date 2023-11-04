@@ -1,10 +1,10 @@
 ﻿  HyperCube.cpp
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(128,29): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(135,103): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(140,103): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(146,29): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(151,103): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(156,103): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(129,29): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(136,103): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(141,103): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(147,29): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(152,103): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(157,103): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
 C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(174,99): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
 C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(196,20): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
 C:\Users\AgnesTachyon\Desktop\Comp 428  A2\HyperSort\Hypersort\Hypersort\HyperCube.cpp(229,64): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
