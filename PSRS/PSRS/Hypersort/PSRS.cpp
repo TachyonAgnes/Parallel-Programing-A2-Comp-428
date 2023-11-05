@@ -86,8 +86,9 @@ void DisplayResults(int p, int n, double t, std::vector<int> &sortedData) {
 }
 
 int main(int argc, char *argv[]) {
+	double executionTime = 0;
 	int arraySize, numOfProcesses, arrayBlockSize;
-	std::vector<int> unsortedArray, unsortedArrayBlock;
+	std::vector<int> unsortedArray, unsortedArrayBlock, sortedArray;
 
 	int elementsCounter = 0;
 
@@ -143,7 +144,16 @@ int main(int argc, char *argv[]) {
 		if (g_processID == MASTER) {
 			// Generate random numbers
 			unsortedArray = GenerateRandomNumbers(arraySize);
+			// sort the data using sequential quick sort
+			executionTime = MPI_Wtime();
+			SequentialQuickSort(unsortedArray, 0, unsortedArray.size() - 1);
+			executionTime = MPI_Wtime() - executionTime;
+			std::cout << "With arraySize: " << arraySize << ", coreSize: " << numOfProcesses << ", Sequential execution time: " << executionTime * 1000 * 1000 << " microsecond" << std::endl;
 
+			// start the timer
+			if (g_processID == MASTER) {
+				executionTime = MPI_Wtime();
+			}
 			masterExtraData.reserve(remainder);
 			// distribute the data into the processes
 			masterExtraData.insert(masterExtraData.end(),
@@ -154,6 +164,7 @@ int main(int argc, char *argv[]) {
 			unsortedArray.erase(unsortedArray.begin() + portionSize * numOfProcesses, unsortedArray.end());
 		}
 
+		
 		MPI_Scatter(unsortedArray.data(), portionSize, MPI_INT, 
 					unsortedArrayBlock.data(), portionSize, MPI_INT, MASTER, MPI_COMM_WORLD);
 
@@ -163,19 +174,6 @@ int main(int argc, char *argv[]) {
 		if (g_processID == MASTER) {
 			unsortedArrayBlock.insert(unsortedArrayBlock.end(), masterExtraData.begin(), masterExtraData.end());
 		}
-
-		//// print the result
-		//std::stringstream ss;
-		//ss << "Process " << g_processID << " has data: ";
-		//for (int i = 0; i < unsortedArrayBlock.size(); ++i) {
-		//	ss << unsortedArrayBlock[i] << " ";
-		//}
-		//ss << std::endl;
-
-		//MPI_Barrier(MPI_COMM_WORLD);
-
-		//std::cout << ss.str();
-
 
 		/// Step 2 using MPI_Gather collects all selected sample value from all processes to the master process
 
@@ -277,26 +275,44 @@ int main(int argc, char *argv[]) {
 
 		// print the result
 		MPI_Barrier(MPI_COMM_WORLD);
+		/// Step 5 collect and merge the data from all processes to the master process
 
-		std::stringstream ss;
-		ss << "Process " << g_processID << " has data: ";
-		for (int i = 0; i < recvbuf.size(); ++i) {
-			ss << recvbuf[i] << " ";
+		// local quick sort
+		SequentialQuickSort(recvbuf, 0, recvbuf.size() - 1);
+
+		sortedArray.reserve(arraySize);
+		// merge sorted local result
+		if (g_processID != MASTER) {
+			MPI_Send(recvbuf.data(), recvbuf.size(), MPI_INT, MASTER, 0, MPI_COMM_WORLD); {}
 		}
-		ss << std::endl;
+		else {
+			// warning, probably have to remove -1 from sorted Array portion, it depends on hyperqs
+			sortedArray.insert(sortedArray.end(), recvbuf.begin(), recvbuf.end());
 
-		MPI_Barrier(MPI_COMM_WORLD);
+			// receive data from other process
+			for (int i = 1; i < numOfProcesses; i++) {
+				// Probe for an incoming message from process i to determine message size
+				MPI_Probe(i, 0, MPI_COMM_WORLD, &status);
+				// Find out how much data is actually coming
+				int count;
+				MPI_Get_count(&status, MPI_INT, &count);
 
-		std::cout << ss.str();
-	
-		/// Step 5 using MPI_Gatherv to collect the data from all processes to the master process
+				// allocate buffer to receive message
+				recvbuf.resize(count);
+				MPI_Recv(recvbuf.data(), recvbuf.size(), MPI_INT, i, 0, MPI_COMM_WORLD, &status);
 
+				// insert received data into sorted array
+				sortedArray.insert(sortedArray.end(), recvbuf.begin(), recvbuf.end());
+			}
 
+		}
+		if (g_processID == MASTER) {
+			executionTime = MPI_Wtime() - executionTime;
+			std::cout << "With arraySize: " << arraySize << ", coreSize: " << numOfProcesses << ", Parallel execution time: " << executionTime * 1000 * 1000 << " microsecond" << std::endl;
+		}
 
-		/// Step 6 merge the data from all processes into one array
-
-		/// Step 7 MPI_finalize
 	}
+	/// Step 7 MPI_finalize
 	MPI_Finalize();
 
 	return 0;
