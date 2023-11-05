@@ -1,0 +1,13 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(517,5): warning MSB8028: 中间目录(x64\Debug\)包含从另一个项目(Hypersort.vcxproj)共享的文件。   这会导致错误的清除和重新生成行为。
+  PSRS.cpp
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\PSRS\PSRS\Hypersort\PSRS.cpp(104,20): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\PSRS\PSRS\Hypersort\PSRS.cpp(183,45): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\PSRS\PSRS\Hypersort\PSRS.cpp(217,70): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\PSRS\PSRS\Hypersort\PSRS.cpp(241,23): warning C4244: “初始化”: 从“__int64”转换到“int”，可能丢失数据
+C:\Users\AgnesTachyon\Desktop\Comp 428  A2\PSRS\PSRS\Hypersort\PSRS.cpp(250,40): warning C4267: “=”: 从“size_t”转换到“_Ty”，可能丢失数据
+          with
+          [
+              _Ty=int
+          ]
+  Hypersort.vcxproj -> C:\Users\AgnesTachyon\Desktop\Comp 428  A2\PSRS\PSRS\x64\Debug\PSRS.exe
+D:\vcpkg\vcpkg\scripts\buildsystems\msbuild\vcpkg.targets(228,5): warning : [vcpkg] Failed to gather app local DLL dependencies, program may not run. Set VcpkgApplocalDeps to false in your project file to suppress this warning. PowerShell arguments: -ExecutionPolicy Bypass -noprofile -File "D:\vcpkg\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\Users\AgnesTachyon\Desktop\Comp 428  A2\PSRS\PSRS\x64\Debug\PSRS.exe" "D:\vcpkg\vcpkg\installed\x64-windows\debug\bin" "x64\Debug\PSRS.tlog\PSRS.write.1u.tlog" "x64\Debug\vcpkg.applocal.log"
