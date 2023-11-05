@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <cmath>
+#include <algorithm>
 
 #define MASTER 0
 
@@ -233,7 +234,7 @@ int main(int argc, char *argv[]) {
 		std::vector<int> sdispls(numOfProcesses);
 
 		// partition the unsortedArrayBlock by selectedPivot
-		std::vector<std::vector<int>> partitions(numOfProcesses);
+		std::vector<std::vector<int> > partitions(numOfProcesses);
 		for (int i = 0; i < unsortedArrayBlock.size(); ++i) {
 			// find the partition index
 			int partitionIndex = std::upper_bound(selectedPivot.begin(), selectedPivot.end(), 
